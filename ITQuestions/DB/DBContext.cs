@@ -1,4 +1,5 @@
-﻿using ITQuestions.Model;
+﻿using ITQuestions.Exceptions;
+using ITQuestions.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,14 @@ namespace ITQuestions.DB
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // Placeholder for future connection string
-            optionsBuilder.UseSqlServer("DB connection string"); // or some other database, will see
+            try
+            {
+                optionsBuilder.UseSqlite("DB connection string"); // or some other database, will see
+            }
+            catch (Exception)
+            {
+                throw new DatabaseNotFoundException();
+            }
         }
     }
 }
