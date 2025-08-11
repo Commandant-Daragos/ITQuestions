@@ -1,5 +1,8 @@
-﻿using ITQuestions.Model;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using ITQuestions.Model;
 using ITQuestions.Service;
+using ITQuestions.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +15,7 @@ using System.Windows;
 
 namespace ITQuestions.ViewModel
 {
-    public class MainWindowVM : INotifyPropertyChanged
+    public partial class MainWindowVM : ObservableObject
     {
         private readonly DatabaseService _databaseService = new DatabaseService();
         public ObservableCollection<ITQuestion> Questions { get; set; } = new ObservableCollection<ITQuestion>();
@@ -40,14 +43,20 @@ namespace ITQuestions.ViewModel
         {
             var data = await _databaseService.GetQuestionsAsync();
             Questions.Clear();
-            foreach (var q in data.Skip(1)) // 1st element is null, will solve later, for now, use Skip(1)-skip one elemetn, this time first
-            {
+            foreach (var q in data) //.Skip(1)) // 1st element is null, will solve later, for now, use Skip(1)-skip one elemetn, this time first
+            {   
+                if (q == null)
+                    { continue; }
+                
                 Questions.Add(q);
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string name = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        [RelayCommand]
+        private void OpenNewQuestionWindow()
+        {
+            var window = new NewQuestion();
+            window.ShowDialog(); // No reload here — reload happens from SubmitQuestionCommand
+        }
     }
 }
