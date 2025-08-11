@@ -3,10 +3,65 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:ITQuestions.ViewModel"
+        xmlns:entity="clr-namesace:ITQuestions.Model"
         xmlns:local="clr-namespace:ITQuestions"
+        xmlns:converter="clr-namespace:ITQuestions.Converter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Title="Questions" Height="900" Width="1300">
 
+    <Window.Resources>
+        <converter:ShortenTextConverter x:Key="ShortenTextConverter" />
+    </Window.Resources>
+
+    <Window.DataContext>
+        <vm:MainWindowVM/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/Resources/ITQuestions.png" Stretch="UniformToFill"/>
+        </Grid.Background>
+
+        <Label Name="Question"
+               Content="Question"
+               FontSize="40"
+               FontWeight="Bold"
+               Foreground="White" 
+               Margin="0,264,980,530"/>
+
+        <TextBlock Name="QuestionText"
+                   TextWrapping="Wrap"
+                   Foreground="White"  
+                   FontWeight="Bold"
+                   Margin="40,324,395,330"
+                   Text="{Binding SelectedQuestion.Question}"/>
+
+        <Label Name="Answer"
+               Content="Answer"
+               FontSize="40"
+               FontWeight="Bold"
+               Foreground="White" 
+               Margin="0,554,1030,225"/>
+
+        <TextBlock Name="AnswerText"
+                   TextWrapping="Wrap"
+                   Foreground="White"               
+                   Margin="40,611,395,23"
+                   Text="{Binding SelectedQuestion.Answer}"/>
+
+        <ListView x:Name="QuestionsList" 
+                  Margin="950,10,10,10"
+                  ItemsSource="{Binding Questions}"
+                  SelectedItem="{Binding SelectedQuestion}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Question, Converter={StaticResource ShortenTextConverter}}"
+                                ToolTip="{Binding QuestionText}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Window>

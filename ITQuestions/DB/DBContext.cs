@@ -11,7 +11,7 @@ namespace ITQuestions.DB
 {
     public class DBContext : DbContext
     {
-        public DbSet<Question> Questions { get; set; }
+        public DbSet<ITQuestion> Questions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

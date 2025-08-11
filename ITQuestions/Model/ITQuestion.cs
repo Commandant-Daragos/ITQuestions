@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ITQuestions.Model
 {
-    public class Question
+    public class ITQuestion
     {
-        public int Id { get; set; }
-        public string QuestionText{ get; set; }
-        public string QuestionAnswer { get; set; }
+        public string Question { get; set; }
+        public string Answer { get; set; }
     }
 }
