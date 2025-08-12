@@ -53,10 +53,25 @@ namespace ITQuestions.ViewModel
         }
 
         [RelayCommand]
-        private void OpenNewQuestionWindow()
+        private void AddNewQuestionAsync()
         {
             var window = new NewQuestion();
             window.ShowDialog(); // No reload here — reload happens from SubmitQuestionCommand
+        }
+
+        [RelayCommand]
+        private async Task UpdateQuestionAsync(ITQuestion question)
+        {
+            var window = new NewQuestion(); // show this dialog for now, new update modal dialog is needed
+            window.ShowDialog();
+            //await _databaseService.UpdateQuestionAsync(question); this needs to be called from inside of modal dialog when update submit (or other name) is cliked
+        }
+
+        [RelayCommand]
+        private async Task DeleteQuestionAsync(ITQuestion question)
+        {
+            await _databaseService.DeleteQuestionAsync(question);
+            await LoadQuestionsAsync(); // Refresh list
         }
     }
 }

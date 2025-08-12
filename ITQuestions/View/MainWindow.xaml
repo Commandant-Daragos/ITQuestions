@@ -53,13 +53,48 @@
                    Text="{Binding SelectedQuestion.Answer}"/>
 
         <ListView x:Name="QuestionsList" 
-                  Margin="950,10,10,80"
-                  ItemsSource="{Binding Questions}"
-                  SelectedItem="{Binding SelectedQuestion}">
+          Margin="950,10,10,80"
+          ItemsSource="{Binding Questions}"
+          SelectedItem="{Binding SelectedQuestion}">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Question, Converter={StaticResource ShortenTextConverter}}"
-                                ToolTip="{Binding QuestionText}" />
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <!-- Text -->
+                            <ColumnDefinition Width="Auto" />
+                            <!-- Edit -->
+                            <ColumnDefinition Width="Auto" />
+                            <!-- Delete -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Question text -->
+                        <TextBlock Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Text="{Binding Question, Converter={StaticResource ShortenTextConverter}}"
+                           ToolTip="{Binding QuestionText}" />
+
+                        <!-- Edit button -->
+                        <Button Grid.Column="1" Content="✎"
+                        Command="{Binding DataContext.UpdateQuestionCommand,
+                                          RelativeSource={RelativeSource AncestorType=ListView}}"
+                        CommandParameter="{Binding}"
+                        Margin="5,0" />
+
+                        <!-- Delete button -->
+                        <Button Grid.Column="2" Content="🗑"
+                        Command="{Binding DataContext.DeleteQuestionCommand,
+                                          RelativeSource={RelativeSource AncestorType=ListView}}"
+                        CommandParameter="{Binding}"
+                        Margin="5,0" />
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
@@ -69,7 +104,7 @@
                 FontSize="30"
                 FontWeight="Bold"
                 Padding="10,5"
-                Command="{Binding OpenNewQuestionWindowCommand}"
+                Command="{Binding AddNewQuestionAsyncCommand}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Margin="0,0,69,10"/>

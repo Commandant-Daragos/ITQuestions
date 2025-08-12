@@ -17,16 +17,6 @@ namespace ITQuestions.Service
     {
         private readonly string databaseUrl = "https://itquestions-4f247-default-rtdb.europe-west1.firebasedatabase.app/";
 
-        //public async Task<List<ITQuestion>> GetQuestionsAsync()
-        //{
-        //    using var client = new HttpClient();
-        //    var response = await client.GetStringAsync($"{databaseUrl}/ITQuestions.json");
-
-        //    var dict = JsonConvert.DeserializeObject<Dictionary<string, ITQuestion>>(response);
-
-        //    return dict?.Values.ToList() ?? new List<ITQuestion>();
-        //}
-
         public async Task<List<ITQuestion>> GetQuestionsAsync()
         {
             using var client = new HttpClient();
@@ -54,10 +44,13 @@ namespace ITQuestions.Service
                     .Where(kv => kv.Value != null)
                     .OrderBy(kv =>
                     {
-                        // Put numeric keys in numeric order, push non-numeric keys to the end
                         return int.TryParse(kv.Key, out var n) ? n : int.MaxValue;
                     })
-                    .Select(kv => kv.Value)
+                    .Select(kv =>
+                    {
+                        kv.Value.FirebaseKey = kv.Key; // Store the Firebase key
+                        return kv.Value;
+                    })
                     .ToList();
 
                 return list;
@@ -73,6 +66,31 @@ namespace ITQuestions.Service
             using var client = new HttpClient();
             var json = JsonConvert.SerializeObject(newQuestion);
             await client.PostAsync($"{databaseUrl}/ITQuestions.json", new StringContent(json, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task UpdateQuestionAsync(ITQuestion question)
+        {
+            //if (string.IsNullOrEmpty(question.FirebaseKey))
+            //    throw new InvalidOperationException("Cannot update a question without a Firebase key.");
+
+            using var client = new HttpClient();
+            var json = JsonConvert.SerializeObject(question);
+            var url = $"{databaseUrl}/ITQuestions/{question.FirebaseKey}.json";
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PutAsync(url, content);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteQuestionAsync(ITQuestion question)
+        {
+            if (string.IsNullOrEmpty(question.FirebaseKey))
+                throw new InvalidOperationException("Cannot delete without a Firebase key.");
+
+            using var client = new HttpClient();
+            var url = $"{databaseUrl}/ITQuestions/{question.FirebaseKey}.json";
+            var response = await client.DeleteAsync(url);
+            response.EnsureSuccessStatusCode();
         }
     }
 }
