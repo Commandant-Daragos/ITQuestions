@@ -48,7 +48,7 @@
 
         <TextBlock Name="AnswerText"
                    TextWrapping="Wrap"
-                   Foreground="White"               
+                   Foreground="White"  
                    Margin="40,611,395,23"
                    Text="{Binding SelectedQuestion.Answer}"/>
 
@@ -79,11 +79,11 @@
                         <TextBlock Grid.Column="0"
                            VerticalAlignment="Center"
                            Text="{Binding Question, Converter={StaticResource ShortenTextConverter}}"
-                           ToolTip="{Binding QuestionText}" />
+                           ToolTip="{Binding Question}" />
 
                         <!-- Edit button -->
                         <Button Grid.Column="1" Content="✎"
-                        Command="{Binding DataContext.UpdateQuestionCommand,
+                        Command="{Binding DataContext.UpdateQuestionAsyncCommand,
                                           RelativeSource={RelativeSource AncestorType=ListView}}"
                         CommandParameter="{Binding}"
                         Margin="5,0" />

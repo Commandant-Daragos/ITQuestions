@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using ITQuestions.View;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -60,11 +61,15 @@ namespace ITQuestions.ViewModel
         }
 
         [RelayCommand]
-        private async Task UpdateQuestionAsync(ITQuestion question)
+        private void UpdateQuestionAsync(ITQuestion question)
         {
-            var window = new NewQuestion(); // show this dialog for now, new update modal dialog is needed
-            window.ShowDialog();
-            //await _databaseService.UpdateQuestionAsync(question); this needs to be called from inside of modal dialog when update submit (or other name) is cliked
+
+            UpdateQuestionVM updateViewModel = new UpdateQuestionVM(question);
+            var window = new UpdateQuestion
+            {
+                DataContext = updateViewModel
+            };
+            window.ShowDialog();           
         }
 
         [RelayCommand]

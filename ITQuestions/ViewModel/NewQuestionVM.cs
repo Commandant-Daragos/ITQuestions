@@ -41,7 +41,7 @@ namespace ITQuestions.ViewModel
         //public NewQuestionVM() {}
 
         [RelayCommand]
-        private async Task SubmitQuestionCommand()
+        private async Task SubmitQuestion()
         {
             await _databaseService.AddQuestionAsync(NewQuestion, NewAnswer);
             NewQuestion = string.Empty;

@@ -70,8 +70,8 @@ namespace ITQuestions.Service
 
         public async Task UpdateQuestionAsync(ITQuestion question)
         {
-            //if (string.IsNullOrEmpty(question.FirebaseKey))
-            //    throw new InvalidOperationException("Cannot update a question without a Firebase key.");
+            if (string.IsNullOrEmpty(question.FirebaseKey))
+                throw new InvalidOperationException("Cannot update a question without a Firebase key.");
 
             using var client = new HttpClient();
             var json = JsonConvert.SerializeObject(question);
