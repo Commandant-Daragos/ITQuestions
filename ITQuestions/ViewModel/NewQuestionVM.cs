@@ -14,8 +14,6 @@ namespace ITQuestions.ViewModel
 {
     public partial class NewQuestionVM : ObservableObject
     {
-        private readonly DatabaseService _databaseService = new DatabaseService();
-
         private string _newQuestion;
         public string NewQuestion
         {
@@ -38,12 +36,11 @@ namespace ITQuestions.ViewModel
             }
         }
 
-        //public NewQuestionVM() {}
 
         [RelayCommand]
         private async Task SubmitQuestion()
         {
-            await _databaseService.AddQuestionAsync(NewQuestion, NewAnswer);
+            await DatabaseService.Instance.AddQuestionAsync(NewQuestion, NewAnswer);
             NewQuestion = string.Empty;
             NewAnswer = string.Empty;
 

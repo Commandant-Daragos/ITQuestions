@@ -13,9 +13,14 @@ using System.Threading.Tasks;
 
 namespace ITQuestions.Service
 {
-    public class DatabaseService
+    public sealed class DatabaseService
     {
         private readonly string databaseUrl = "https://itquestions-4f247-default-rtdb.europe-west1.firebasedatabase.app/";
+
+        private static readonly Lazy<DatabaseService> _instance = new(() => new DatabaseService());
+        public static DatabaseService Instance => _instance.Value;
+
+        private DatabaseService() { }
 
         public async Task<List<ITQuestion>> GetQuestionsAsync()
         {

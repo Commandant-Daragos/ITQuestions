@@ -14,7 +14,6 @@ namespace ITQuestions.ViewModel
 {
     public partial class UpdateQuestionVM : ObservableObject
     {
-        private readonly DatabaseService _databaseService = new DatabaseService();
 
         private ITQuestion _originalQuestion;
 
@@ -54,7 +53,7 @@ namespace ITQuestions.ViewModel
             _updatedQuestion.Question = UpdateQuestion;
             _updatedQuestion.Answer = UpdateAnswer;
 
-            await _databaseService.UpdateQuestionAsync(_updatedQuestion);
+            await DatabaseService.Instance.UpdateQuestionAsync(_updatedQuestion);
 
             // Refresh the main list in the background
             if (Application.Current.MainWindow.DataContext is MainWindowVM mainVM)

@@ -18,7 +18,6 @@ namespace ITQuestions.ViewModel
 {
     public partial class MainWindowVM : ObservableObject
     {
-        private readonly DatabaseService _databaseService = new DatabaseService();
         public ObservableCollection<ITQuestion> Questions { get; set; } = new ObservableCollection<ITQuestion>();
 
         private ITQuestion _selectedQuestion;
@@ -42,9 +41,9 @@ namespace ITQuestions.ViewModel
 
         public async Task LoadQuestionsAsync()
         {
-            var data = await _databaseService.GetQuestionsAsync();
+            var data = await DatabaseService.Instance.GetQuestionsAsync();
             Questions.Clear();
-            foreach (var q in data) //.Skip(1)) // 1st element is null, will solve later, for now, use Skip(1)-skip one elemetn, this time first
+            foreach (var q in data)
             {   
                 if (q == null)
                     { continue; }
@@ -57,7 +56,7 @@ namespace ITQuestions.ViewModel
         private void AddNewQuestionAsync()
         {
             var window = new NewQuestion();
-            window.ShowDialog(); // No reload here — reload happens from SubmitQuestionCommand
+            window.ShowDialog();
         }
 
         [RelayCommand]
@@ -75,7 +74,7 @@ namespace ITQuestions.ViewModel
         [RelayCommand]
         private async Task DeleteQuestionAsync(ITQuestion question)
         {
-            await _databaseService.DeleteQuestionAsync(question);
+            await DatabaseService.Instance.DeleteQuestionAsync(question);
             await LoadQuestionsAsync(); // Refresh list
         }
     }
