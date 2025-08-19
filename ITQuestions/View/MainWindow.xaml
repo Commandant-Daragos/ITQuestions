@@ -47,11 +47,17 @@
                Foreground="White" 
                Margin="0,554,1030,225"/>
 
-        <TextBlock Name="AnswerText"
-                   TextWrapping="Wrap"
-                   Foreground="White"  
-                   Margin="40,611,395,23"
-                   Text="{Binding SelectedQuestion.Answer}"/>
+        <TextBox Name="AnswerText"
+                 VerticalScrollBarVisibility="Auto"
+                 TextWrapping="Wrap"
+                 Foreground="White"
+                 IsReadOnly="True"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 CaretBrush="Transparent"
+                 Focusable="False"
+                 Margin="40,611,395,23"
+                 Text="{Binding SelectedQuestion.Answer}"/>
 
         <ListView x:Name="QuestionsList" 
           Margin="950,10,10,80"
