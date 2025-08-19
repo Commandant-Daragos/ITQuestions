@@ -7,6 +7,7 @@
         xmlns:vm="clr-namespace:ITQuestions.ViewModel"
         xmlns:entity="clr-namesace:ITQuestions.Model"
         mc:Ignorable="d"
+        Icon="/Resources/ITQuestions.ico"
         ResizeMode="NoResize"
         Title="New question" Height="450" Width="800">
     <Grid>

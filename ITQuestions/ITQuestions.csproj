@@ -6,10 +6,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\ITQuestions.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ITQuestions.ico" />
     <None Remove="Resources\ITQuestions.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\ITQuestions.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
