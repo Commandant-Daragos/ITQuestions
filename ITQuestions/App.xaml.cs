@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using ITQuestions.DB;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 
@@ -9,6 +10,10 @@ namespace ITQuestions
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnExit(ExitEventArgs e)
+        {
+            SyncLocalAndRemote.Instance.SyncAsync().GetAwaiter().GetResult();
+            base.OnExit(e);
+        }
     }
-
 }

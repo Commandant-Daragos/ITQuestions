@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ITQuestions.DB;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using ITQuestions.View;
@@ -14,6 +15,8 @@ namespace ITQuestions.ViewModel
 {
     public partial class NewQuestionVM : ObservableObject
     {
+        private readonly LocalITQuestionRepository _local = LocalITQuestionRepository.Instance;
+
         private string _newQuestion;
         public string NewQuestion
         {
@@ -36,19 +39,14 @@ namespace ITQuestions.ViewModel
             }
         }
 
-
-        [RelayCommand]
-        private async Task SubmitQuestion()
+        public async Task AddQuestionAsync(ITQuestion q)
         {
-            await DatabaseService.Instance.AddQuestionAsync(NewQuestion, NewAnswer);
-            NewQuestion = string.Empty;
-            NewAnswer = string.Empty;
+            using var db = new DBContext();
+            if (string.IsNullOrEmpty(q.FirebaseKey))
+                q.FirebaseKey = Guid.NewGuid().ToString();
 
-            // Refresh the main list in the background
-            if (Application.Current.MainWindow.DataContext is MainWindowVM mainVM)
-            {
-                await mainVM.LoadQuestionsAsync();
-            }
+            db.ITQuestions.Add(q);
+            await db.SaveChangesAsync();
         }
     }
 }

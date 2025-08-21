@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ITQuestions.DB;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using ITQuestions.View;
@@ -14,6 +15,7 @@ namespace ITQuestions.ViewModel
 {
     public partial class UpdateQuestionVM : ObservableObject
     {
+        private readonly LocalITQuestionRepository _local = LocalITQuestionRepository.Instance;
 
         private ITQuestion _originalQuestion;
 
@@ -53,13 +55,18 @@ namespace ITQuestions.ViewModel
             _updatedQuestion.Question = UpdateQuestion;
             _updatedQuestion.Answer = UpdateAnswer;
 
-            await DatabaseService.Instance.UpdateQuestionAsync(_updatedQuestion);
+            await _local.UpdateQuestionAsync(_updatedQuestion);
 
             // Refresh the main list in the background
             if (Application.Current.MainWindow.DataContext is MainWindowVM mainVM)
             {
                 await mainVM.LoadQuestionsAsync();
             }
+
+            Application.Current.Windows
+                .OfType<Window>()
+                .SingleOrDefault(w => w.DataContext == this)?
+                .Close();
         }
     }
 }

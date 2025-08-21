@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ITQuestions.DB;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using ITQuestions.View;
@@ -19,6 +20,7 @@ namespace ITQuestions.ViewModel
     public partial class MainWindowVM : ObservableObject
     {
         public ObservableCollection<ITQuestion> Questions { get; set; } = new ObservableCollection<ITQuestion>();
+        private readonly LocalITQuestionRepository _local = LocalITQuestionRepository.Instance;
 
         private ITQuestion _selectedQuestion;
         public ITQuestion SelectedQuestion
@@ -31,22 +33,34 @@ namespace ITQuestions.ViewModel
             }
         }
 
+
         public MainWindowVM()
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(async () =>
             {
+                await SyncLocalAndRemote.Instance.SyncAsync();
                 await LoadQuestionsAsync();
             }), System.Windows.Threading.DispatcherPriority.Background);
+
+            StartPeriodicSync();
+        }
+
+        private void StartPeriodicSync()
+        {
+            var timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = TimeSpan.FromMinutes(5);
+            timer.Tick += async (s, e) => await SyncLocalAndRemote.Instance.SyncAsync();
+            timer.Start();
         }
 
         public async Task LoadQuestionsAsync()
         {
-            var data = await DatabaseService.Instance.GetQuestionsAsync();
+            var data = await _local.GetQuestionsAsync();
             Questions.Clear();
             foreach (var q in data)
             {   
                 if (q == null)
-                    { continue; }
+                    continue;
                 
                 Questions.Add(q);
             }
@@ -74,7 +88,7 @@ namespace ITQuestions.ViewModel
         [RelayCommand]
         private async Task DeleteQuestionAsync(ITQuestion question)
         {
-            await DatabaseService.Instance.DeleteQuestionAsync(question);
+            await _local.DeleteQuestionAsync(question);
             await LoadQuestionsAsync(); // Refresh list
         }
     }

@@ -67,7 +67,7 @@ namespace ITQuestions.Service
 
         public async Task AddQuestionAsync(string question, string answer)
         {
-            var newQuestion = new ITQuestion { Question = question, Answer = answer };
+            var newQuestion = new ITQuestion { Question = question, Answer = answer , LastModified = DateTime.UtcNow};
             using var client = new HttpClient();
             var json = JsonConvert.SerializeObject(newQuestion);
             await client.PostAsync($"{databaseUrl}/ITQuestions.json", new StringContent(json, Encoding.UTF8, "application/json"));

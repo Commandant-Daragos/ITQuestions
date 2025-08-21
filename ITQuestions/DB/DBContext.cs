@@ -11,19 +11,15 @@ namespace ITQuestions.DB
 {
     public class DBContext : DbContext
     {
-        public DbSet<ITQuestion> Questions { get; set; }
+        public DbSet<ITQuestion> ITQuestions { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+            => options.UseSqlite("Data Source=ITQuestions.db");
+
+        public DBContext()
         {
-            // Placeholder for future connection string
-            try
-            {
-                optionsBuilder.UseSqlite("DB connection string"); // or some other database, will see
-            }
-            catch (Exception)
-            {
-                throw new DatabaseNotFoundException();
-            }
+            // Quick way: if DB or tables don’t exist yet, they’ll be created
+            Database.EnsureCreated();
         }
     }
 }
