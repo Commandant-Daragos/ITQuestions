@@ -48,7 +48,7 @@ namespace ITQuestions.ViewModel
         private void StartPeriodicSync()
         {
             var timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromMinutes(5);
+            timer.Interval = TimeSpan.FromMinutes(1);
             timer.Tick += async (s, e) => await SyncLocalAndRemote.Instance.SyncAsync();
             timer.Start();
         }

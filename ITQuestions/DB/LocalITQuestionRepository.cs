@@ -10,7 +10,6 @@ namespace ITQuestions.DB
 {
     public class LocalITQuestionRepository
     {
-
         private static readonly Lazy<LocalITQuestionRepository> _instance =
             new(() => new LocalITQuestionRepository());
 
@@ -30,29 +29,25 @@ namespace ITQuestions.DB
             if (string.IsNullOrEmpty(q.FirebaseKey))
                 q.FirebaseKey = Guid.NewGuid().ToString();
 
+            q.LastModified = DateTime.UtcNow;
             db.ITQuestions.Add(q);
             await db.SaveChangesAsync();
         }
-        //public async Task AddQuestionAsync(string question, string answer, DateTime dt)
-        //{
-        //    using var db = new DBContext();
-        //    db.ITQuestions.Add(new ITQuestion { FirebaseKey = Guid.NewGuid().ToString() ,Question = question, Answer = answer, LastModified = dt });
-        //    await db.SaveChangesAsync();
-        //}
 
         public async Task UpdateQuestionAsync(ITQuestion q)
         {
             using var db = new DBContext();
-            db.ITQuestions.Attach(q);
-            db.Entry(q).State = EntityState.Modified;
+            q.LastModified = DateTime.UtcNow;
+            db.ITQuestions.Update(q);
             await db.SaveChangesAsync();
         }
 
         public async Task DeleteQuestionAsync(ITQuestion q)
         {
             using var db = new DBContext();
-            db.ITQuestions.Attach(q);
-            db.ITQuestions.Remove(q);
+            q.IsDeleted = true;
+            q.LastModified = DateTime.UtcNow;
+            db.ITQuestions.Update(q);
             await db.SaveChangesAsync();
         }
     }

@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using ITQuestions.DB;
+using System.ComponentModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +21,22 @@ namespace ITQuestions
         public MainWindow()
         {
             InitializeComponent();
+
+            Closing += MainWindow_Closing;
+        }
+
+        private async void MainWindow_Closing(object? sender, CancelEventArgs e)
+        {
+            try
+            {
+                // run sync before app closes
+                await SyncLocalAndRemote.Instance.SyncAsync();
+            }
+            catch (Exception ex)
+            {
+                // optional logging
+                Console.WriteLine($"Sync failed: {ex.Message}");
+            }
         }
     }
 }

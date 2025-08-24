@@ -56,7 +56,7 @@
                 FontSize="15"
                 FontWeight="Bold"
                 Padding="10,5"
-                Command="{Binding SubmitQuestionCommand}"
+                Command="{Binding AddQuestionCommand}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Margin="5"/>

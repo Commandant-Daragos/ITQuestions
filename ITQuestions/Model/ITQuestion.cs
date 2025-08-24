@@ -12,12 +12,14 @@ namespace ITQuestions.Model
     public class ITQuestion
     {
         [Key]
-        [JsonIgnore] // Don’t send the key back to Firebase automatically
-        public string FirebaseKey { get; set; }
+        [JsonIgnore]
+        public string FirebaseKey { get; set; } = Guid.NewGuid().ToString();
 
         public string Question { get; set; }
         public string Answer { get; set; }
 
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
+
+        public bool IsDeleted { get; set; } = false;
     }
 }
