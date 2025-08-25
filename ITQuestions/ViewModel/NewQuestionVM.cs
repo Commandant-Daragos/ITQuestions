@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITQuestions.DB;
+using ITQuestions.Enum;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using ITQuestions.View;
@@ -49,6 +50,7 @@ namespace ITQuestions.ViewModel
             {
                 Question = NewQuestion,
                 Answer = NewAnswer,
+                SyncStatus = SyncStatus.Add,
             };
 
             NewQuestion = string.Empty;
@@ -61,29 +63,11 @@ namespace ITQuestions.ViewModel
                 await db.SaveChangesAsync();
             }
 
-            // Push remote
-            //await DatabaseService.Instance.AddQuestionAsync(q);
-
             // Refresh UI
             if (Application.Current.MainWindow.DataContext is MainWindowVM mainVM)
             {
                 await mainVM.LoadQuestionsAsync();
             }
         }
-
-        /// <summary>
-        /// Method to get data from remote database.
-        /// </summary>
-        /// <param name="q">Question in remote database.</param>
-        //public async Task AddQuestionAsync(ITQuestion q)
-        //{
-        //    using var db = new DBContext();
-        //    if (string.IsNullOrEmpty(q.FirebaseKey))
-        //        q.FirebaseKey = Guid.NewGuid().ToString();
-
-        //    db.ITQuestions.Add(q);
-        //    await db.SaveChangesAsync();
-
-        //}
     }
 }

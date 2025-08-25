@@ -3,6 +3,7 @@ using FireSharp.Config;
 using FireSharp.Interfaces;
 using Google.Apis.Auth.OAuth2;
 using ITQuestions.DB;
+using ITQuestions.Enum;
 using ITQuestions.Model;
 using Newtonsoft.Json;
 using System;
@@ -38,6 +39,7 @@ namespace ITQuestions.Service
             foreach (var kv in dict)
             {
                 kv.Value.FirebaseKey = kv.Key; // ensure key matches
+                kv.Value.SyncStatus = SyncStatus.None;
             }
 
             return dict.Values.ToList();
@@ -46,7 +48,6 @@ namespace ITQuestions.Service
         public async Task AddQuestionAsync(ITQuestion question)
         {
             question.LastModified = DateTime.UtcNow;
-            question.IsDeleted = false;
 
             var json = JsonConvert.SerializeObject(question);
 

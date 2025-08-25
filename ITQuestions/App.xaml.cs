@@ -15,19 +15,15 @@ namespace ITQuestions
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-        }
-
-        protected override void OnActivated(EventArgs e)
-        {
-            base.OnActivated(e);
-
-            var main = Application.Current.MainWindow;
-            if (main != null)
+            Current.Dispatcher.InvokeAsync(() =>
             {
-                // avoid duplicate event handlers if OnActivated fires multiple times
-                main.Closing -= MainWindow_Closing;
-                main.Closing += MainWindow_Closing;
-            }
+                if (Current.MainWindow is MainWindow main)
+                {
+                    // Attach only once
+                    main.Closing -= MainWindow_Closing;
+                    main.Closing += MainWindow_Closing;
+                }
+            });
         }
 
         private async void MainWindow_Closing(object? sender, CancelEventArgs e)
@@ -41,7 +37,7 @@ namespace ITQuestions
             try
             {
                 // run sync
-                await SyncLocalAndRemote.Instance.PushLocalToRemoteAsync();
+                await SyncLocalAndRemote.Instance.SyncAsync();
             }
             catch (Exception ex)
             {

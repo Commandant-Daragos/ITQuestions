@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITQuestions.DB;
+using ITQuestions.Enum;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using ITQuestions.View;
@@ -48,7 +49,7 @@ namespace ITQuestions.ViewModel
         private void StartPeriodicSync()
         {
             var timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromMinutes(1);
+            timer.Interval = TimeSpan.FromMinutes(10);
             timer.Tick += async (s, e) => await SyncLocalAndRemote.Instance.SyncAsync();
             timer.Start();
         }
@@ -59,7 +60,7 @@ namespace ITQuestions.ViewModel
             Questions.Clear();
             foreach (var q in data)
             {   
-                if (q == null)
+                if (q == null || q.SyncStatus == SyncStatus.Delete)
                     continue;
                 
                 Questions.Add(q);
@@ -88,7 +89,7 @@ namespace ITQuestions.ViewModel
         [RelayCommand]
         private async Task DeleteQuestionAsync(ITQuestion question)
         {
-            await _local.DeleteQuestionAsync(question);
+            await _local.SoftDeleteQuestionAsync(question);
             await LoadQuestionsAsync(); // Refresh list
         }
     }

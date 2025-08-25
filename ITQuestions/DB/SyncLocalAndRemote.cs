@@ -1,4 +1,5 @@
-﻿using ITQuestions.Service;
+﻿using ITQuestions.Enum;
+using ITQuestions.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,99 +23,74 @@ namespace ITQuestions.DB
             var localData = await _local.GetQuestionsAsync();
             var remoteData = await _remote.GetQuestionsAsync();
 
-            var remoteDict = remoteData.ToDictionary(q => q.FirebaseKey);
             var localDict = localData.ToDictionary(q => q.FirebaseKey);
+            var remoteDict = remoteData.ToDictionary(q => q.FirebaseKey);
 
-            // Handle local -> remote
+            // --- Phase 1: Local → Remote ---
             foreach (var localQ in localData)
             {
-                // case: local record has no FirebaseKey yet
-                if (string.IsNullOrEmpty(localQ.FirebaseKey))
-                {
-                    if (!localQ.IsDeleted)
-                        await _remote.AddQuestionAsync(localQ); // will assign FirebaseKey + update local
-                    continue; // skip further checks since it’s handled
-                }
-
                 if (!remoteDict.TryGetValue(localQ.FirebaseKey, out var remoteQ))
                 {
-                    // Local exists but missing in Firebase → push it
-                    if (!localQ.IsDeleted)
-                        await _remote.AddQuestionAsync(localQ);
+                    // Local exists but missing in remote
+                    switch (localQ.SyncStatus)
+                    {
+                        case SyncStatus.Add:
+                            await _remote.AddQuestionAsync(localQ);
+                            break;
+
+                        case SyncStatus.Update:
+                            // Remote doesn’t have it anymore → re-create
+                            await _remote.AddQuestionAsync(localQ);
+                            break;
+                        case SyncStatus.Delete:
+                            await _local.HardDeleteQuestionAsync(localQ);
+                            localDict.Remove(localQ.FirebaseKey);
+                            continue;
+                    }
                 }
                 else
                 {
-                    // Exists in both → resolve conflicts
+                    // Exists in both → resolve conflicts by LastModified
                     if (localQ.LastModified > remoteQ.LastModified)
                     {
-                        if (localQ.IsDeleted)
+                        switch (localQ.SyncStatus)
                         {
-                            await _remote.DeleteQuestionAsync(localQ);
+                            case SyncStatus.Update:
+                                await _remote.UpdateQuestionAsync(localQ);
+                                break;
 
-                            // also remove locally
-                            using (var db = new DBContext())
-                            {
-                                db.ITQuestions.Remove(localQ);
-                                await db.SaveChangesAsync();
-                            }
+                            case SyncStatus.Delete:
+                                try
+                                {
+                                    await _remote.DeleteQuestionAsync(localQ);
+                                }
+                                catch (Exception ex)
+                                {
+                                    // Optionally log it, but don’t fail sync if it’s "not found"
+                                    Console.WriteLine($"Remote delete skipped for {localQ.FirebaseKey}: {ex.Message}");
+                                }
+                                await _local.HardDeleteQuestionAsync(localQ);
+                                continue;
                         }
-                        else
-                        {
-                            await _remote.UpdateQuestionAsync(localQ);
-                        }
+
+                        await _local.UpdateQuestionAsync(localQ, SyncStatus.None);
                     }
                     else if (remoteQ.LastModified > localQ.LastModified)
                     {
-                        if (remoteQ.IsDeleted)
-                        {
-                            using (var db = new DBContext())
-                            {
-                                db.ITQuestions.Remove(remoteQ);
-                                await db.SaveChangesAsync();
-                            }
-                        }
-                        else
-                        {
-                            await _local.UpdateQuestionAsync(remoteQ);
-                        }
+                        await _local.UpdateQuestionAsync(remoteQ, SyncStatus.None);
                     }
                 }
             }
 
-            // Handle remote -> local (new records from Firebase)
+            // --- Phase 2: Remote → Local ---
             foreach (var remoteQ in remoteData)
             {
                 if (!localDict.ContainsKey(remoteQ.FirebaseKey))
                 {
-                    if (!remoteQ.IsDeleted)
-                        await _local.AddQuestionAsync(remoteQ);
-                }
-            }
-        }
-
-        public async Task PushLocalToRemoteAsync()
-        {
-            var localData = await _local.GetQuestionsAsync();
-
-            foreach (var localQ in localData)
-            {
-                try
-                {
-                    if (localQ.IsDeleted)
+                    if (remoteQ.SyncStatus != SyncStatus.Delete)
                     {
-                        await _remote.DeleteQuestionAsync(localQ);
+                        await _local.AddQuestionAsync(remoteQ, SyncStatus.None);
                     }
-                    else
-                    {
-                        // For now always ADD to Firebase
-                        await _remote.AddQuestionAsync(localQ);
-                    }
-
-                    Console.WriteLine($"Synced {localQ.FirebaseKey}");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed on {localQ.FirebaseKey}: {ex.Message}");
                 }
             }
         }

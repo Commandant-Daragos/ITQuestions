@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITQuestions.DB;
+using ITQuestions.Enum;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using ITQuestions.View;
@@ -55,7 +56,7 @@ namespace ITQuestions.ViewModel
             _updatedQuestion.Question = UpdateQuestion;
             _updatedQuestion.Answer = UpdateAnswer;
 
-            await _local.UpdateQuestionAsync(_updatedQuestion);
+            await _local.UpdateQuestionAsync(_updatedQuestion, SyncStatus.Update);
 
             // Refresh the main list in the background
             if (Application.Current.MainWindow.DataContext is MainWindowVM mainVM)

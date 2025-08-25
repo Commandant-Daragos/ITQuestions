@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ITQuestions.Enum;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,6 +21,8 @@ namespace ITQuestions.Model
 
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
 
-        public bool IsDeleted { get; set; } = false;
+        //Sync flag
+        [JsonIgnore]
+        public SyncStatus SyncStatus { get; set; } = SyncStatus.None;
     }
 }
