@@ -3,11 +3,8 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*'   # Runs only when you push a tag like v1.1.0
+      - 'v*'   # Runs only when you push a tag like v1.0.0
 
-permissions:
-  contents: write
-  
 jobs:
   build:
     runs-on: windows-latest
@@ -15,6 +12,43 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag.TrimStart("v")
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Update project version from tag
+        run: |
+          (Get-Content ITQuestions/ITQuestions.csproj) `
+          -replace '<Version>.*</Version>', "<Version>${{ steps.get_version.outputs.version }}</Version>" `
+          -replace '<AssemblyVersion>.*</AssemblyVersion>', "<AssemblyVersion>${{ steps.get_version.outputs.version }}</AssemblyVersion>" `
+          -replace '<FileVersion>.*</FileVersion>', "<FileVersion>${{ steps.get_version.outputs.version }}</FileVersion>" `
+          | Set-Content ITQuestions/ITQuestions.csproj
+
+      - name: Update update.json
+        run: |
+          $version = "${{ steps.get_version.outputs.version }}"
+          $json = @"
+          {
+            "latestVersion": "$version",
+            "downloadUrl": "https://github.com/${{ github.repository }}/releases/download/v$version/ITQuestions.exe",
+            "changelog": "Release v$version"
+          }
+          "@
+          $json | Out-File -FilePath update.json -Encoding utf8
+
+      - name: Commit update.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add update.json ITQuestions/ITQuestions.csproj
+          git commit -m "Update version to v${{ steps.get_version.outputs.version }}"
+          git push origin HEAD:${{ github.ref_name }} || echo "No push (tag only build)"
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
