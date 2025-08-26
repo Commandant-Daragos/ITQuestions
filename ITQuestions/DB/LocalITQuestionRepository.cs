@@ -28,7 +28,7 @@ namespace ITQuestions.DB
             //    q.SyncStatus = SyncStatus.None;
             //}
 
-            return questions;
+            return questions; 
         }
 
         public async Task AddQuestionAsync(ITQuestion q, SyncStatus status)
