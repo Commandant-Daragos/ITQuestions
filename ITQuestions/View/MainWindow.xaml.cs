@@ -1,5 +1,6 @@
 ﻿using ITQuestions.DB;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,6 +24,18 @@ namespace ITQuestions
             InitializeComponent();
 
             Closing += MainWindow_Closing;
+
+            var version = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
+
+            if (!string.IsNullOrEmpty(version) && version.Contains('+'))
+            {
+                version = version.Split('+')[0];
+            }
+
+            VersionLabel.Content = $"App version: v{version}";
         }
 
         private async void MainWindow_Closing(object? sender, CancelEventArgs e)

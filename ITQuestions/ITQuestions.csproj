@@ -9,6 +9,12 @@
     <ApplicationIcon>Resources\ITQuestions.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.2</FileVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Resources\ITQuestions.ico" />
     <None Remove="Resources\ITQuestions.png" />

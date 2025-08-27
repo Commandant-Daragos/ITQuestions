@@ -26,6 +26,11 @@
             <ImageBrush ImageSource="/Resources/ITQuestions.png" Stretch="UniformToFill"/>
         </Grid.Background>
 
+        <Label Name="VersionLabel"
+               Foreground="Wheat"
+               Content="Placeholder version."/>
+                
+        
         <Label Name="Question"
                Content="Question"
                FontSize="40"
