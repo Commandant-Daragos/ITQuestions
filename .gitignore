@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /ITQuestions/Service/firebase-key.json
+/ITQuestions.db
+/ITQuestions.db-shm
+/ITQuestions.db-wal
