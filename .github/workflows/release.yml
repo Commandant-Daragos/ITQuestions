@@ -1,77 +1,76 @@
-name: Build and Release
+name: Build and Release (tag)
 
 on:
   push:
     tags:
-      - 'v*'   # Runs only when you push a tag like v1.0.0
-      
+      - 'v*'   # Trigger only when you push a tag like v1.2.3
+
 permissions:
-  contents: write
-  
+  contents: write   # needed so the action can create a Release and upload assets
+
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Extract version from tag
-        id: get_version
-        run: |
-          $tag = "${{ github.ref_name }}"
-          $version = $tag.TrimStart("v")
-          echo "version=$version" >> $env:GITHUB_OUTPUT
-
-      - name: Update project version from tag
-        run: |
-          (Get-Content ITQuestions/ITQuestions.csproj) `
-          -replace '<Version>.*</Version>', "<Version>${{ steps.get_version.outputs.version }}</Version>" `
-          -replace '<AssemblyVersion>.*</AssemblyVersion>', "<AssemblyVersion>${{ steps.get_version.outputs.version }}</AssemblyVersion>" `
-          -replace '<FileVersion>.*</FileVersion>', "<FileVersion>${{ steps.get_version.outputs.version }}</FileVersion>" `
-          | Set-Content ITQuestions/ITQuestions.csproj
-
-      - name: Update update.json
-        run: |
-          $version = "${{ steps.get_version.outputs.version }}"
-          $json = @"
-          {
-            "latestVersion": "$version",
-            "downloadUrl": "https://github.com/${{ github.repository }}/releases/download/v$version/ITQuestions.exe",
-            "changelog": "Release v$version"
-          }
-          "@
-          $json | Out-File -FilePath update.json -Encoding utf8
-
-      - name: Commit update.json
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add update.json ITQuestions/ITQuestions.csproj
-          git commit -m "Update version to v${{ steps.get_version.outputs.version }}"
-          git push origin HEAD:${{ github.ref_name }} || echo "No push (tag only build)"
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
-      - name: Publish self-contained app
-        run: dotnet publish ITQuestions/ITQuestions.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeAllContentForSelfExtract=true /p:PublishTrimmed=false -o publish
+      - name: Derive version from tag
+        id: get_version
+        shell: pwsh
+        run: |
+          $tag = '${{ github.ref_name }}'      # e.g. v1.2.3
+          if (-not $tag.StartsWith('v')) { throw "Tag must start with 'v' (got $tag)" }
+          $ver = $tag.TrimStart('v')           # -> 1.2.3
+          "version=$ver" >> $env:GITHUB_OUTPUT
 
-      - name: List publish output
-        run: dir publish
+      - name: Publish self-contained single-file (win-x64)
+        shell: pwsh
+        run: |
+          $ver = '${{ steps.get_version.outputs.version }}'
+          dotnet publish ITQuestions/ITQuestions.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            /p:PublishSingleFile=true `
+            /p:IncludeAllContentForSelfExtract=true `
+            /p:PublishTrimmed=false `
+            /p:Version=$ver `
+            /p:AssemblyVersion=$ver `
+            /p:FileVersion=$ver `
+            -o publish
 
-      - name: Create zip
-        run: powershell Compress-Archive -Path publish/* -DestinationPath ITQuestions-${{ github.ref_name }}.zip
+          # Rename the produced exe to a stable filename
+          $exe = Get-ChildItem publish -Filter *.exe | Select-Object -First 1
+          if (-not $exe) { throw "No EXE found in publish folder" }
+          Rename-Item $exe.FullName -NewName "ITQuestions.exe" -Force
 
-      - name: Upload to Release
+      - name: Generate update.json
+        shell: pwsh
+        run: |
+          $ver  = '${{ steps.get_version.outputs.version }}'
+          $repo = '${{ github.repository }}'  # e.g. Commandant-Daragos/ITQuestions
+          $obj = [ordered]@{
+            latestVersion = $ver
+            downloadUrl   = "https://github.com/$repo/releases/download/v$ver/ITQuestions.exe"
+            changelog     = "Release v$ver"
+          }
+          $obj | ConvertTo-Json -Depth 5 | Out-File -FilePath update.json -Encoding utf8
+
+      - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref_name }}        # e.g., v1.2.3
           files: |
-            ITQuestions-${{ github.ref_name }}.zip
             publish/ITQuestions.exe
+            update.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
