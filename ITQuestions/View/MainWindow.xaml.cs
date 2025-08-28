@@ -1,5 +1,6 @@
 ﻿using ITQuestions.DB;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -25,10 +26,9 @@ namespace ITQuestions
 
             Closing += MainWindow_Closing;
 
-            var version = Assembly
-                .GetExecutingAssembly()
-                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                ?.InformationalVersion;
+            var exePath = Assembly.GetExecutingAssembly().Location;
+            var info = FileVersionInfo.GetVersionInfo(exePath);
+            var version = info.ProductVersion;
 
             if (!string.IsNullOrEmpty(version) && version.Contains('+'))
             {
