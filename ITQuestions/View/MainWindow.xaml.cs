@@ -28,7 +28,7 @@ namespace ITQuestions
 
             var exePath = Assembly.GetExecutingAssembly().Location;
             var info = FileVersionInfo.GetVersionInfo(exePath);
-            var version = info.ProductVersion;
+            var version = info.ProductVersion; 
 
             if (!string.IsNullOrEmpty(version) && version.Contains('+'))
             {
