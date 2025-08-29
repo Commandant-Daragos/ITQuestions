@@ -1,17 +1,8 @@
-﻿using FirebaseAdmin;
-using FireSharp.Config;
-using FireSharp.Interfaces;
-using Google.Apis.Auth.OAuth2;
-using ITQuestions.DB;
-using ITQuestions.Enum;
+﻿using ITQuestions.Enum;
 using ITQuestions.Model;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ITQuestions.Service
 {
@@ -38,7 +29,7 @@ namespace ITQuestions.Service
 
             foreach (var kv in dict)
             {
-                kv.Value.FirebaseKey = kv.Key; // ensure key matches
+                kv.Value.FirebaseKey = kv.Key;
                 kv.Value.SyncStatus = SyncStatus.None;
             }
 
@@ -51,7 +42,6 @@ namespace ITQuestions.Service
 
             var json = JsonConvert.SerializeObject(question);
 
-            // use FirebaseKey as the dictionary key
             var url = $"{databaseUrl}/ITQuestions/{question.FirebaseKey}.json";
             var response = await _client.PutAsync(url, new StringContent(json, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();

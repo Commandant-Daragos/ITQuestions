@@ -3,13 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using ITQuestions.DB;
 using ITQuestions.Enum;
 using ITQuestions.Model;
-using ITQuestions.Service;
-using ITQuestions.View;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ITQuestions.ViewModel
@@ -54,14 +47,12 @@ namespace ITQuestions.ViewModel
             NewQuestion = string.Empty;
             NewAnswer = string.Empty;
 
-            // Save locally
             using (var db = new DBContext())
             {
                 db.ITQuestions.Add(q);
                 await db.SaveChangesAsync();
             }
 
-            // Refresh UI
             if (Application.Current.MainWindow.DataContext is MainWindowVM mainVM)
             {
                 await mainVM.LoadQuestionsAsync();

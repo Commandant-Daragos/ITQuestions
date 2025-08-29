@@ -2,9 +2,24 @@
 {
     public enum SyncStatus
     {
-        None,   // unchanged
-        Add,    // new, needs to be pushed
-        Update, // modified, needs update
-        Delete  // soft-deleted, needs to propagate
+        /// <summary>
+        /// Unchanged status.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// New question added.
+        /// </summary>
+        Add,
+
+        /// <summary>
+        /// Modified question.
+        /// </summary>
+        Update,
+
+        /// <summary>
+        /// Flag for soft-delete question.
+        /// </summary>
+        Delete
     }
 }

@@ -2,16 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ITQuestions
 {
@@ -28,7 +19,7 @@ namespace ITQuestions
 
             var exePath = Assembly.GetExecutingAssembly().Location;
             var info = FileVersionInfo.GetVersionInfo(exePath);
-            var version = info.ProductVersion; 
+            var version = info.ProductVersion;
 
             if (!string.IsNullOrEmpty(version) && version.Contains('+'))
             {
@@ -42,12 +33,10 @@ namespace ITQuestions
         {
             try
             {
-                // run sync before app closes
                 await SyncLocalAndRemote.Instance.SyncAsync();
             }
             catch (Exception ex)
             {
-                // optional logging
                 Console.WriteLine($"Sync failed: {ex.Message}");
             }
         }

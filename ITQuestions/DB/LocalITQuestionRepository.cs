@@ -1,18 +1,13 @@
 ﻿using ITQuestions.Enum;
 using ITQuestions.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITQuestions.DB
 {
     public class LocalITQuestionRepository
     {
         private static readonly Lazy<LocalITQuestionRepository> _instance =
-            new(() => new LocalITQuestionRepository()); 
+            new(() => new LocalITQuestionRepository());
 
         public static LocalITQuestionRepository Instance => _instance.Value;
 
@@ -21,14 +16,8 @@ namespace ITQuestions.DB
         public async Task<List<ITQuestion>> GetQuestionsAsync()
         {
             using var db = new DBContext();
-            var questions =  await db.ITQuestions.ToListAsync();
-
-            //foreach(var q in questions)
-            //{
-            //    q.SyncStatus = SyncStatus.None;
-            //}
-
-            return questions; 
+            var questions = await db.ITQuestions.ToListAsync();
+            return questions;
         }
 
         public async Task AddQuestionAsync(ITQuestion q, SyncStatus status)

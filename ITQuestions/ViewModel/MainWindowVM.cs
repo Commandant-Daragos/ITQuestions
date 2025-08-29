@@ -3,17 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using ITQuestions.DB;
 using ITQuestions.Enum;
 using ITQuestions.Model;
-using ITQuestions.Service;
 using ITQuestions.View;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ITQuestions.ViewModel
@@ -59,10 +50,10 @@ namespace ITQuestions.ViewModel
             var data = await _local.GetQuestionsAsync();
             Questions.Clear();
             foreach (var q in data)
-            {   
+            {
                 if (q == null || q.SyncStatus == SyncStatus.Delete)
                     continue;
-                
+
                 Questions.Add(q);
             }
         }
@@ -83,14 +74,14 @@ namespace ITQuestions.ViewModel
             {
                 DataContext = updateViewModel
             };
-            window.ShowDialog();           
+            window.ShowDialog();
         }
 
         [RelayCommand]
         private async Task DeleteQuestionAsync(ITQuestion question)
         {
             await _local.SoftDeleteQuestionAsync(question);
-            await LoadQuestionsAsync(); // Refresh list
+            await LoadQuestionsAsync();
         }
     }
 }

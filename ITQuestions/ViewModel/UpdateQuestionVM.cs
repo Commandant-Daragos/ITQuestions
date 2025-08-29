@@ -3,13 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using ITQuestions.DB;
 using ITQuestions.Enum;
 using ITQuestions.Model;
-using ITQuestions.Service;
-using ITQuestions.View;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ITQuestions.ViewModel
@@ -45,7 +38,7 @@ namespace ITQuestions.ViewModel
         public UpdateQuestionVM(ITQuestion question)
         {
             _originalQuestion = question;
-            UpdateQuestion = question.Question;  
+            UpdateQuestion = question.Question;
             UpdateAnswer = question.Answer;
         }
 
@@ -58,7 +51,6 @@ namespace ITQuestions.ViewModel
 
             await _local.UpdateQuestionAsync(_updatedQuestion, SyncStatus.Update);
 
-            // Refresh the main list in the background
             if (Application.Current.MainWindow.DataContext is MainWindowVM mainVM)
             {
                 await mainVM.LoadQuestionsAsync();

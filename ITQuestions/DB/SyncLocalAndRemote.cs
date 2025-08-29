@@ -1,10 +1,5 @@
 ﻿using ITQuestions.Enum;
 using ITQuestions.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITQuestions.DB
 {
@@ -66,7 +61,6 @@ namespace ITQuestions.DB
                                 }
                                 catch (Exception ex)
                                 {
-                                    // Optionally log it, but don’t fail sync if it’s "not found"
                                     Console.WriteLine($"Remote delete skipped for {localQ.FirebaseKey}: {ex.Message}");
                                 }
                                 await _local.HardDeleteQuestionAsync(localQ);

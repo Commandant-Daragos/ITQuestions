@@ -3,15 +3,11 @@ using CommunityToolkit.Mvvm.Input;
 using ITQuestions.Model;
 using ITQuestions.Service;
 using System.Diagnostics;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace ITQuestions.ViewModel.Auto_UpdateVM;
 
 public partial class AutoUpdateVM : ObservableObject
 {
-    private readonly UpdateService _updates = UpdateService.Instance;
-
     private string _currentVersion = "";
     public string CurrentVersion
     {

@@ -60,13 +60,19 @@ jobs:
         run: |
           $ver  = '${{ steps.get_version.outputs.version }}'
           $repo = '${{ github.repository }}'
-          $msg  = '${{ steps.last_commit.outputs.message }}'
+
+          # Preserve multiline commit message
+          $raw  = @'
+          ${{ toJson(steps.last_commit.outputs.message) }}
+          '@
+          $msg  = $raw | ConvertFrom-Json
+
           if (-not $msg) { $msg = "Release v$ver" }
 
           $obj = [ordered]@{
-            latestVersion = $ver
-            downloadUrl   = "https://github.com/$repo/releases/download/v$ver/ITQuestions.exe"
-            changelog     = $msg
+            LatestVersion = $ver
+            DownloadUrl   = "https://github.com/$repo/releases/download/v$ver/ITQuestions.exe"
+            Changelog     = $msg
           }
           $obj | ConvertTo-Json -Depth 5 | Out-File -FilePath update.json -Encoding utf8
 

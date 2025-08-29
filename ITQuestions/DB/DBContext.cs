@@ -1,11 +1,5 @@
-﻿using ITQuestions.Exceptions;
-using ITQuestions.Model;
+﻿using ITQuestions.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITQuestions.DB
 {
@@ -18,7 +12,6 @@ namespace ITQuestions.DB
 
         public DBContext()
         {
-            // Quick way: if DB or tables don’t exist yet, they’ll be created
             Database.EnsureCreated();
         }
     }
