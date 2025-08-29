@@ -16,8 +16,6 @@ namespace ITQuestions.ViewModel
 {
     public partial class NewQuestionVM : ObservableObject
     {
-        //private readonly LocalITQuestionRepository _local = LocalITQuestionRepository.Instance;
-
         private string _newQuestion;
         public string NewQuestion
         {
