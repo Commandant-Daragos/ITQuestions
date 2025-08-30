@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Update application" Height="200" Width="350"
-        ResizeMode="NoResize" Icon="/Resources/ITQuestions.ico">
+        ResizeMode="NoResize" Icon="/Resources/ITQuestions.ico"
+        WindowStartupLocation="CenterOwner">
 
     <Grid Background="Blue">
         <StackPanel Margin="10">
@@ -16,9 +17,9 @@
             <TextBlock Text="{Binding UpdateMessage}" Foreground="White" TextWrapping="Wrap"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-                <Button Content="Update" Width="70" Margin="0,0,10,0"
-                        Command="{Binding UpdateCommand}"/>
-                <Button Content="Cancel" Width="70" Click="Cancel_Click"/>
+                <Button Content="Update" Width="90" Margin="0,0,8,0"
+                        Command="{Binding UpdateCommand}" IsEnabled="{Binding CanUpdate}"/>
+                <Button Content="Cancel" Width="80" Click="Cancel_Click" IsEnabled="{Binding CanUpdate}"/>
             </StackPanel>
         </StackPanel>
     </Grid>
