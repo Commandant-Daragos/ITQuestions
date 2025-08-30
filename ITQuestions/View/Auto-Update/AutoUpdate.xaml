@@ -1,10 +1,15 @@
 ﻿<Window x:Class="ITQuestions.View.Auto_Update.AutoUpdate"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Update application" Height="200" Width="350"
+        xmlns:local="clr-namespace:ITQuestions.Converter"
+        Title="Update application" Height="250" Width="350"
         ResizeMode="NoResize" Icon="/Resources/ITQuestions.ico"
         WindowStartupLocation="CenterOwner">
 
+    <Window.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
+    
     <Grid Background="Blue">
         <StackPanel Margin="10">
             <TextBlock Text="Current Version:" Foreground="White"/>
@@ -14,7 +19,16 @@
             <TextBlock Text="{Binding LatestVersion}" Foreground="White"/>
 
             <TextBlock Text="What's New:" Foreground="White" FontWeight="Bold"/>
-            <TextBlock Text="{Binding UpdateMessage}" Foreground="White" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding UpdateMessage}" Foreground="White" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+            <!-- PROGRESS UI -->
+            <TextBlock Text="{Binding Status}" Foreground="White" FontStyle="Italic"/>
+            <ProgressBar Value="{Binding ProgressPercent}" 
+                         Height="20" 
+                         Minimum="0" 
+                         Maximum="100" 
+                         Margin="0,5,0,10"
+                         Visibility="{Binding IsUpdating, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                 <Button Content="Update" Width="90" Margin="0,0,8,0"
