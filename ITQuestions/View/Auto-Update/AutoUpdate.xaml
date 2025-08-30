@@ -32,8 +32,8 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                 <Button Content="Update" Width="90" Margin="0,0,8,0"
-                        Command="{Binding UpdateCommand}" IsEnabled="{Binding CanUpdate}"/>
-                <Button Content="Cancel" Width="80" Click="Cancel_Click" IsEnabled="{Binding CanUpdate}"/>
+                        Command="{Binding UpdateCommand}" Visibility="{Binding CanUpdate}"/>
+                <Button Content="Cancel" Width="80" Click="Cancel_Click" Visibility="{Binding CanUpdate}"/>
             </StackPanel>
         </StackPanel>
     </Grid>
