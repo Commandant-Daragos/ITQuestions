@@ -46,6 +46,14 @@ jobs:
       - name: List publish output
         run: dir publish
 
+      # Install Inno Setup (adds iscc.exe to PATH)
+      - name: Setup Inno Setup
+        uses: Minionguyjpro/Inno-Setup-Action@v1.1.0
+
+      # Build installer from .iss script
+      - name: Build installer
+        run: iscc /dMyAppVersion=${{ steps.get_version.outputs.version }} Installer\ITQuestionsInstaller.iss
+        
       # Get last commit message → changelog
       - name: Get last commit message
         id: last_commit
@@ -76,17 +84,13 @@ jobs:
           }
           $obj | ConvertTo-Json -Depth 5 | Out-File -FilePath update.json -Encoding utf8
 
-      # Create zip
-      - name: Create zip
-        run: powershell Compress-Archive -Path publish/* -DestinationPath ITQuestions-${{ github.ref_name }}.zip
-
       # Upload to Release
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ITQuestions-${{ github.ref_name }}.zip
             publish/ITQuestions.exe
             update.json
+            Installer/Output/ITQuestionsSetup.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
